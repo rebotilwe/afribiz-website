@@ -6,25 +6,10 @@ var app = angular.module('myPage', ['ngTouch']);
 app.controller('myPageCtrl', function($scope,$http){
 
 	/* ------------------------------ */
-	/* GOOGLE MAP
+	/* GOOGLE MAP - DISABLED
 	/* ------------------------------ */
 
-	// $scope.mapInitialization = function() {
-	// 	$scope.myLatlng = new google.maps.LatLng(33.96290,-118.43589),
-	// 	$scope.mapOptions = {
-	// 		zoom: 14,
-	// 		scrollwheel: false,
-	// 		center: $scope.myLatlng
-	// 	},
-	// 	$scope.map = new google.maps.Map(document.getElementById('map'), $scope.mapOptions),
-	// 	$scope.marker = new google.maps.Marker({
-	// 		position: $scope.myLatlng,
-	// 		map: $scope.map,
-	// 		icon: "images/map.png"
-	// 	});
-	// }
-
-	// $scope.mapInitialization();
+	// Google Maps code commented out to prevent errors
 
 	/* ------------------------------ */
 	/* SCROLL BUTTON
@@ -62,7 +47,7 @@ app.controller('myPageCtrl', function($scope,$http){
 	})
 
 	/* ------------------------------ */
-	/* NAVIGATION MENU SCROLL
+	/* NAVIGATION MENU SCROLL - FIXED VERSION
 	/* ------------------------------ */
 
 	$scope.menuScroll = function() {
@@ -77,31 +62,90 @@ app.controller('myPageCtrl', function($scope,$http){
 		$scope.scrollNav = function(e) {
 			e.preventDefault();
 			$('#mobile_nav').removeClass('uk-active');
-			$scope.pageAnimate = function(page_block) {
-				$('html, body').animate({
-					scrollTop: $('.' + page_block + '').offset().top-$scope.menuActiveHeight
-				}, 700);
+			
+			// Helper function to scroll to element
+			$scope.pageAnimate = function(selector) {
+				var $el = $(selector);
+				if($el && $el.length) {
+					var top = $el.offset().top - $scope.menuActiveHeight;
+					$('html, body').animate({scrollTop: top}, 700);
+				} else {
+					console.log('Element not found:', selector);
+				}
 			}
-			if ($(e.target).hasClass('link_features') || $(e.target).hasClass('container_arrow')) {
-				$scope.pageAnimate('elements');
-			} else if ($(e.target).hasClass('link_offer')) {
-				$scope.pageAnimate('features');
-			} else if ($(e.target).hasClass('link_pricing')) {
-				$scope.pageAnimate('price');
-			} else if ($(e.target).hasClass('link_clients')) {
-				$scope.pageAnimate('clients');
-			} else if ($(e.target).hasClass('link_facts')) {
-				$scope.pageAnimate('statistic');
-			} else if ($(e.target).hasClass('link_projects')) {
-				$scope.pageAnimate('gallery');
-			} else if ($(e.target).hasClass('link_team')) {
-				$scope.pageAnimate('team');
-			} else if ($(e.target).hasClass('link_customers')) {
-				$scope.pageAnimate('reviews');
-			} else if ($(e.target).hasClass('container_button_subscribe')) {
-				$scope.pageAnimate('subscribe');
-			} else if ($(e.target).hasClass('container_button_message')) {
-				$scope.pageAnimate('contact');
+			
+			// Map navigation links to their corresponding sections
+			var target = $(e.target);
+			
+			if (target.hasClass('link_features') || target.hasClass('container_arrow')) {
+				// Home - scroll to top
+				$('html, body').animate({scrollTop: 0}, 700);
+				
+			} else if (target.hasClass('link_offer')) {
+				// Services - try ID first, then class fallback
+				if($('#offer').length) {
+					$scope.pageAnimate('#offer');
+				} else {
+					$scope.pageAnimate('.features');
+				}
+				
+			} else if (target.hasClass('link_pricing')) {
+				// Process
+				if($('#pricing').length) {
+					$scope.pageAnimate('#pricing');
+				} else {
+					$scope.pageAnimate('.price');
+				}
+				
+			} else if (target.hasClass('link_clients')) {
+				// Clients
+				if($('#clients').length) {
+					$scope.pageAnimate('#clients');
+				} else {
+					$scope.pageAnimate('.clients');
+				}
+				
+			} else if (target.hasClass('link_facts')) {
+				// Impact
+				if($('#facts').length) {
+					$scope.pageAnimate('#facts');
+				} else if($('#statistic').length) {
+					$scope.pageAnimate('#statistic');
+				} else {
+					$scope.pageAnimate('.statistic');
+				}
+				
+			} else if (target.hasClass('link_projects')) {
+				// Work
+				if($('#projects').length) {
+					$scope.pageAnimate('#projects');
+				} else {
+					$scope.pageAnimate('.gallery');
+				}
+				
+			} else if (target.hasClass('link_team')) {
+				// Team
+				if($('#team').length) {
+					$scope.pageAnimate('#team');
+				} else {
+					$scope.pageAnimate('.team');
+				}
+				
+			} else if (target.hasClass('link_customers')) {
+				// Testimonials
+				if($('#customers').length) {
+					$scope.pageAnimate('#customers');
+				} else {
+					$scope.pageAnimate('.reviews');
+				}
+				
+			} else if (target.hasClass('container_button_subscribe')) {
+				// Subscribe button
+				$scope.pageAnimate('.subscribe');
+				
+			} else if (target.hasClass('container_button_message') || target.hasClass('green_button')) {
+				// Contact/Start Your Journey button
+				$scope.pageAnimate('.contact');
 			}
 		}
 	}
@@ -123,9 +167,9 @@ app.controller('myPageCtrl', function($scope,$http){
 	$scope.counterInit = function() {
 		$('.statistic').on('inview.uk.scrollspy', function(){
 			$scope.numAnim1 = new CountUp('statistic_counter_1', 0, 100, 0, 3.5);
-			$scope.numAnim2 = new CountUp('statistic_counter_2', 0, 150, 0, 3.5);
-			$scope.numAnim3 = new CountUp('statistic_counter_3', 0, 500, 0, 3.5);
-			$scope.numAnim4 = new CountUp('statistic_counter_4', 0, 750, 0, 3.5);
+			$scope.numAnim2 = new CountUp('statistic_counter_2', 0, 50, 0, 3.5);
+			$scope.numAnim3 = new CountUp('statistic_counter_3', 0, 10000, 0, 3.5);
+			$scope.numAnim4 = new CountUp('statistic_counter_4', 0, 1000000, 0, 3.5);
 			$scope.numAnim1.start();
 			$scope.numAnim2.start();
 			$scope.numAnim3.start();

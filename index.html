@@ -799,9 +799,25 @@
 	<div class="uk-container uk-container-center uk-text-center uk-position-relative" data-uk-scrollspy="{cls:'uk-active'}">
 		<h3 class="uk-h3 uk-text-contrast animated section_title team_title">See Us in Action</h3>
 		<h4 class="uk-h4 uk-text-contrast uk-margin-large-bottom animated section_subtitle">Watch how we transform businesses through digital innovation</h4>
-		<a class="uk-border-circle uk-icon-play animated video_button" href="https://www.youtube.com/embed/YOUR_VIDEO_ID" data-uk-lightbox="{group:'group1'}" data-lightbox-type="iframe"></a>
+		
+		<!-- Video play button -->
+		<a class="uk-border-circle uk-icon-play animated video_button" href="#" onclick="playVideo(); return false;"></a>
+		
 	</div>
 </section>
+<!-- Video Modal - Fixed version with proper focus management -->
+<div id="video-modal" class="uk-modal" style="background: rgba(0,0,0,0.9);">
+    <div class="uk-modal-dialog uk-modal-dialog-large" style="background: transparent; box-shadow: none; width: 80%; max-width: 1000px; margin: 50px auto;">
+        <!-- Close button with proper tabindex and no focus issues -->
+        <a class="uk-modal-close uk-close" style="position: absolute; top: -30px; right: -30px; background: rgba(0,0,0,0.6); border-radius: 50%; width: 40px; height: 40px; line-height: 40px; text-align: center; color: #fff; z-index: 1050; transition: all 0.3s ease;" onclick="pauseVideoAndClose(this)">×</a>
+        <div class="uk-modal-body" style="padding: 0;">
+            <video id="modal-video" width="100%" height="auto" controls style="border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+                <source src="images/afribiz.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
 
 <section class="reviews section">
 	<div class="uk-container uk-container-center uk-text-center" data-uk-scrollspy="{cls:'uk-active'}">
@@ -1022,12 +1038,74 @@
 <script type="text/javascript" src="js/jquery.ajaxchimp.min.js"></script>
 <script type="text/javascript" src="js/scripts.ang.js"></script>
 
-<!-- Free web hosting badge - you may remove this if not needed -->
-<div style="text-align:right;position:fixed;bottom:3px;right:3px;width:100%;z-index:999999;cursor:pointer;line-height:0;display:block;">
-    <a target="_blank" href="https://www.freewebhostingarea.com" title="Free Web Hosting with PHP8">
-        <img alt="Free Web Hosting" src="images/poweredby.png" style="border-width: 0px;width: 180px; height: 45px; float: right;">
-    </a>
-</div>
+
+<!-- Add this JavaScript at the bottom of your page, before the closing </body> tag -->
+<script>
+function playVideo() {
+    var video = document.getElementById('modal-video');
+    if(video) {
+        video.currentTime = 0; // Reset to beginning
+        video.play(); // Auto-play when modal opens
+    }
+    
+    // Show modal using UIkit
+    var modal = UIkit.modal('#video-modal');
+    modal.show();
+    
+    // Remove focus from any elements that might cause issues
+    setTimeout(function() {
+        if(document.activeElement && document.activeElement.classList.contains('uk-modal-close')) {
+            document.activeElement.blur();
+        }
+    }, 100);
+}
+
+function pauseVideoAndClose(closeButton) {
+    var video = document.getElementById('modal-video');
+    if(video) {
+        video.pause();
+    }
+    
+    // Blur the close button to prevent focus issues
+    if(closeButton) {
+        closeButton.blur();
+    }
+    
+    // Close the modal
+    var modal = UIkit.modal('#video-modal');
+    modal.hide();
+}
+
+// Pause video when modal is closed via other means (like clicking background)
+$(document).on('uk-modal.hide', '#video-modal', function() {
+    var video = document.getElementById('modal-video');
+    if(video) {
+        video.pause();
+    }
+    
+    // Ensure no elements have focus when modal closes
+    if(document.activeElement) {
+        document.activeElement.blur();
+    }
+});
+
+// Override UIkit's default close behavior for this modal
+$(document).on('uk-modal.show', '#video-modal', function() {
+    // Ensure modal doesn't have aria-hidden issues
+    $('#video-modal').attr('aria-hidden', 'false');
+});
+
+// Fix for the close button
+$(document).ready(function() {
+    // Replace the default close button handler
+    $('#video-modal .uk-modal-close').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        pauseVideoAndClose(this);
+        return false;
+    });
+});
+</script>
 
 </body>
 </html>
